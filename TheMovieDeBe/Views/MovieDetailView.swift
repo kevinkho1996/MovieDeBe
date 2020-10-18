@@ -17,14 +17,13 @@ struct MovieDetailView: View {
                 self.movieDetailState.loadMovie(id: self.movieId)
             }
             
-            
             if movieDetailState.movie != nil {
                 MovieDetailListView(movie: self.movieDetailState.movie!)
                 
             }
             
         }
-//        .navigationBarTitle(movieDetailState.movie?.title ?? "")
+        //        .navigationBarTitle(movieDetailState.movie?.title ?? "")
         .onAppear{
             self.movieDetailState.loadMovie(id: self.movieId)
         }
@@ -38,89 +37,111 @@ struct MovieDetailListView: View {
     private let imageLoader = ImageLoader()
     
     var body: some View {
-        List {
-            MovieDetailImage(imageLoader: imageLoader, imageURL: self.movie.backdropURL)
-                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-            
-            Text(movie.title).font(.largeTitle)
-            
-            HStack {
-                if !movie.ratingText.isEmpty {
-                    Text(movie.ratingText).foregroundColor(.yellow)
-                }
-                Text(movie.scoreText)
-            }
-            
-            HStack {
-                Text(movie.genreText)
-                Text("•")
-                Text(movie.yearText)
-                Text(movie.durationText)
-            }
-            
-            Text(movie.overview)
-            
-            HStack(alignment: .top, spacing: 4) {
-                if movie.cast != nil && movie.cast!.count > 0 {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Starring").font(.headline)
-                        ForEach(self.movie.cast!.prefix(9)) { cast in
-                            Text(cast.name)
-                        }
-                    }
-                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+        ScrollView(.vertical, showsIndicators: false){
+            VStack(alignment: .center, spacing: 0) {
+                MovieDetailImage(imageLoader: imageLoader, imageURL: self.movie.backdropURL)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                
+                Group {
+                    Text(movie.title)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .padding(.top, 10)
+                    
                     Spacer()
-                }
-                
-                if movie.crew != nil && movie.crew!.count > 0 {
-                    VStack(alignment: .leading, spacing: 4) {
-                        if movie.directors != nil && movie.directors!.count > 0 {
-                            Text("Director(s)").font(.headline)
-                            ForEach(self.movie.directors!.prefix(2)) { crew in
-                                Text(crew.name)
-                            }
+                    
+                    HStack {
+                        if !movie.ratingText.isEmpty {
+                            Text(movie.ratingText).foregroundColor(.yellow)
                         }
-                        
-                        if movie.producers != nil && movie.producers!.count > 0 {
-                            Text("Producer(s)").font(.headline)
-                                .padding(.top)
-                            ForEach(self.movie.producers!.prefix(2)) { crew in
-                                Text(crew.name)
-                            }
-                        }
-                        
-                        if movie.screenWriters != nil && movie.screenWriters!.count > 0 {
-                            Text("Screenwriter(s)").font(.headline)
-                                .padding(.top)
-                            ForEach(self.movie.screenWriters!.prefix(2)) { crew in
-                                Text(crew.name)
-                            }
-                        }
+                        Text(movie.scoreText)
                     }
-                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                }
-            }
-            
-            if movie.youtubeTrailers != nil && movie.youtubeTrailers!.count > 0 {
-                Text("Trailers").font(.headline)
-                
-                ForEach(movie.youtubeTrailers!) { trailer in
-                    Button(action: {
-                        self.selectedTrailer = trailer
-                    }) {
-                        HStack {
-                            Text(trailer.name)
+                    
+                    HStack {
+                        Text(movie.genreText)
+                        Text("•")
+                        Text(movie.yearText)
+                        Text(movie.durationText)
+                    }
+                    
+                    Text(movie.overview)
+                        .padding([.top, .leading, .trailing])
+                    
+                    Divider()
+                    
+                    HStack(alignment: .top, spacing: 4) {
+                        if movie.cast != nil && movie.cast!.count > 0 {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Starring").font(.headline)
+                                ForEach(self.movie.cast!.prefix(9)) { cast in
+                                    Text(cast.name)
+                                }
+                            }
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             Spacer()
-                            Image(systemName: "play.circle.fill")
-                                .foregroundColor(Color(UIColor.systemBlue))
+                        }
+                        
+                        if movie.crew != nil && movie.crew!.count > 0 {
+                            VStack(alignment: .leading, spacing: 4) {
+                                if movie.directors != nil && movie.directors!.count > 0 {
+                                    Text("Director(s)").font(.headline)
+                                    ForEach(self.movie.directors!.prefix(2)) { crew in
+                                        Text(crew.name)
+                                    }
+                                }
+                                
+                                if movie.producers != nil && movie.producers!.count > 0 {
+                                    Text("Producer(s)").font(.headline)
+                                        .padding(.top)
+                                    ForEach(self.movie.producers!.prefix(2)) { crew in
+                                        Text(crew.name)
+                                    }
+                                }
+                                
+                                if movie.screenWriters != nil && movie.screenWriters!.count > 0 {
+                                    Text("Screenwriter(s)").font(.headline)
+                                        .padding(.top)
+                                    ForEach(self.movie.screenWriters!.prefix(2)) { crew in
+                                        Text(crew.name)
+                                    }
+                                }
+                            }
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    .padding([.top, .leading, .trailing])
+                    
+                    Divider()
+                    
+                    if movie.youtubeTrailers != nil && movie.youtubeTrailers!.count > 0 {
+                        Text("Trailers")
+                            .font(.headline)
+                            .padding(.vertical)
+                        
+                        
+                        ForEach(movie.youtubeTrailers!) { trailer in
+                            Button(action: {
+                                self.selectedTrailer = trailer
+                            }) {
+                                HStack {
+                                    Text(trailer.name)
+                                        .padding([.leading, .bottom, .trailing])
+                                    Spacer()
+                                    Image(systemName: "play.circle.fill")
+                                        .foregroundColor(Color(UIColor.systemBlue))
+                                        .padding([.leading, .bottom, .trailing])
+                                }
+                            }
                         }
                     }
                 }
+                .sheet(item: self.$selectedTrailer) { trailer in
+                    SafariView(url: trailer.youtubeURL!)
+                }
             }
         }
-        .sheet(item: self.$selectedTrailer) { trailer in
-            SafariView(url: trailer.youtubeURL!)
-        }
+        .edgesIgnoringSafeArea(.top)
+        
     }
 }
 
@@ -136,6 +157,7 @@ struct MovieDetailImage: View {
             if self.imageLoader.image != nil {
                 Image(uiImage: self.imageLoader.image!)
                     .resizable()
+                    .scaledToFit()
             }
         }
         .aspectRatio(16/9, contentMode: .fit)
